@@ -1,0 +1,163 @@
+import Link from "next/link";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  BottomNavigation,
+  BottomNavigationAction,
+} from "@mui/material";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import CategoryIcon from "@mui/icons-material/Category";
+import WarehouseIcon from "@mui/icons-material/Warehouse";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import { useRouter } from "next/router";
+import { ReactNode } from "react";
+
+interface MenuItem {
+  label: string;
+  href: string;
+  icon: any;
+}
+
+const menuItems: MenuItem[] = [
+  { label: "Dashboard", href: "/", icon: DashboardIcon },
+  { label: "Products", href: "/products", icon: CategoryIcon },
+  { label: "Warehouses", href: "/warehouses", icon: WarehouseIcon },
+  { label: "Stock Levels", href: "/stock", icon: BarChartIcon },
+];
+
+const GREEN_MAIN = "#2e7d32";
+
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
+  const router = useRouter();
+  const activePath =
+    menuItems.find((item) => router.pathname === item.href)?.href || "/";
+
+  return (
+    <>
+      <AppBar position="static" sx={{ bgcolor: GREEN_MAIN }}>
+        <Toolbar>
+          <InventoryIcon sx={{ mr: { xs: 1, sm: 2 } }} />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              flexGrow: 1,
+              fontSize: { xs: "0.95rem", sm: "1.1rem", lg: "1.25rem" },
+            }}
+          >
+            <Link href={"/"}>GreenSupply Co</Link>
+          </Typography>
+
+          {/* Desktop Navigation: 992px+ */}
+          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            {menuItems.map((item) => (
+              <Button
+                key={item.href}
+                color="inherit"
+                component={Link}
+                href={item.href}
+                sx={{
+                  fontWeight: router.pathname === item.href ? 700 : 400,
+                  textDecoration:
+                    router.pathname === item.href ? "underline" : "none",
+                  textUnderlineOffset: "8px",
+                  fontSize: "0.9rem",
+                  borderRadius: "10px",
+                  "&:hover": {
+                    textDecoration:
+                      router.pathname === item.href ? "underline" : "none",
+                    backgroundColor:
+                      router.pathname === item.href
+                        ? "transparent"
+                        : "rgba(255, 255, 255, 0.06)",
+                  },
+                }}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </Box>
+
+          {/* Mobile Spacer */}
+          <Box sx={{ display: { xs: "block", md: "none" }, width: "48px" }} />
+        </Toolbar>
+      </AppBar>
+
+      {/* Main Content */}
+      <Box
+        sx={{
+          minHeight: "100vh",
+          pb: { xs: "70px", lg: 4 },
+        }}
+      >
+        {children}
+      </Box>
+
+      {/* Bottom Navigation */}
+      <Box
+        sx={{
+          display: { xs: "block", md: "none" },
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1100,
+          borderTop: "1px solid #e0e0e0",
+        }}
+      >
+        <BottomNavigation
+          showLabels
+          value={activePath}
+          onChange={(event, newValue) => {
+            router.push(newValue as string);
+          }}
+          sx={{
+            height: 60,
+            bgcolor: "white",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          {menuItems.map((item) => {
+            const IconComponent = item.icon;
+            const isActive = item.href === activePath;
+            return (
+              <BottomNavigationAction
+                key={item.href}
+                label={item.label}
+                value={item.href}
+                icon={
+                  <IconComponent
+                    sx={{
+                      color: isActive ? GREEN_MAIN : "text.secondary",
+                      fontSize: "1.3rem",
+                    }}
+                  />
+                }
+                sx={{
+                  color: isActive ? GREEN_MAIN : "text.secondary",
+                  minWidth: "auto",
+                  "& .MuiBottomNavigationAction-label": {
+                    marginTop: "2px",
+                    fontSize: { xs: "0.6rem", sm: "0.8rem" },
+                  },
+                  "& .MuiBottomNavigationAction-label.Mui-selected": {
+                    color: GREEN_MAIN,
+                  },
+                }}
+              />
+            );
+          })}
+        </BottomNavigation>
+      </Box>
+    </>
+  );
+}
