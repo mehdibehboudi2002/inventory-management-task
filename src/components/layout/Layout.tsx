@@ -13,7 +13,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CategoryIcon from "@mui/icons-material/Category";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import SyncAltIcon from "@mui/icons-material/SyncAlt"; 
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
 
@@ -27,8 +27,9 @@ const menuItems: MenuItem[] = [
   { label: "Dashboard", href: "/", icon: DashboardIcon },
   { label: "Products", href: "/products", icon: CategoryIcon },
   { label: "Warehouses", href: "/warehouses", icon: WarehouseIcon },
-  { label: "Transfers", href: "/transfers", icon: SyncAltIcon }, 
+  { label: "Transfers", href: "/transfers", icon: SyncAltIcon },
   { label: "Stock Levels", href: "/stock", icon: BarChartIcon },
+  { label: "Alerts", href: "/alerts", icon: BarChartIcon },
 ];
 
 const GREEN_MAIN = "#2e7d32";
@@ -41,9 +42,9 @@ export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   // Ensure the activePath correctly identifies the current page, 
   const activePath =
-    menuItems.find((item) => router.pathname.startsWith(item.href) && item.href !== '/')?.href || 
-    (router.pathname === '/' ? '/' : ""); 
-    
+    menuItems.find((item) => router.pathname.startsWith(item.href) && item.href !== '/')?.href ||
+    (router.pathname === '/' ? '/' : "");
+
   return (
     <>
       <AppBar position="static" sx={{ bgcolor: GREEN_MAIN }}>

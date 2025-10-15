@@ -6,15 +6,20 @@ import {
   Chip,
   Alert,
   Box,
+  Button,
 } from "@mui/material";
 import { GetServerSideProps } from "next";
 import Layout from "@/components/layout/Layout";
 import ListTable from "@/components/ui/ListTable";
-import { DataTableColumn, Product, Warehouse, StockItem } from "@/types/inventory";
+import { DataTableColumn, Product, Warehouse, StockItem, Alert as AlertType } from "@/types/inventory";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import CategoryIcon from "@mui/icons-material/Category";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import ErrorIcon from "@mui/icons-material/Error";
+import WarningIcon from "@mui/icons-material/Warning";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import {
   BarChart,
   Bar,
@@ -53,10 +58,11 @@ interface HomeProps {
   products: Product[];
   warehouses: Warehouse[];
   stock: StockItem[];
+  alerts: AlertType[];
   error?: string;
 }
 
-export default function Home({ products, warehouses, stock, error }: HomeProps) {
+export default function Home({ products, warehouses, stock, alerts, error }: HomeProps) {
   // Calculate all dashboard data from the server-provided props
   const inventoryOverview = calculateInventoryOverview(products, stock);
   const metrics = calculateMetrics(products, warehouses, stock, inventoryOverview);
@@ -68,6 +74,10 @@ export default function Home({ products, warehouses, stock, error }: HomeProps) 
     categoryData,
     stockStatusData,
   } = metrics;
+
+  // Count open alerts by level
+  const criticalAlerts = alerts.filter(a => a.level === "Critical" && a.status === "Open").length;
+  const lowAlerts = alerts.filter(a => a.level === "Low" && a.status === "Open").length;
 
   // Define columns for the Inventory Overview ListTable
   const inventoryColumns: DataTableColumn<InventoryItem>[] = [
@@ -136,7 +146,8 @@ export default function Home({ products, warehouses, stock, error }: HomeProps) 
   }
 
   // Conditional styles for Low Stock Alert Card
-  const lowStockGradient = lowStockCount > 0
+  const alertsCount = alerts.filter(a => a.status === "Open").length;
+  const lowStockGradient = alertsCount > 0
     ? "linear-gradient(135deg, #f57c00 0%, #ffab2cff 100%)"
     : "linear-gradient(135deg, #14A44D 0%, #5ad78cff 100%)";
 
@@ -196,14 +207,132 @@ export default function Home({ products, warehouses, stock, error }: HomeProps) 
           </Grid>
 
           <Grid item xs={6} sm={6} md={3}>
-            <DashboardStatCard
-              title="Low Stock Alerts"
-              value={lowStockCount}
-              icon={<WarningAmberIcon sx={iconSx} />}
-              backgroundGradient={lowStockGradient}
-            />
+            <Box
+              component="a"
+              href="/alerts"
+              sx={{
+                textDecoration: "none",
+                display: "block",
+                cursor: "pointer",
+              }}
+            >
+              <DashboardStatCard
+                title="Active Alerts"
+                value={alertsCount}
+                icon={<WarningAmberIcon sx={iconSx} />}
+                backgroundGradient={lowStockGradient}
+              />
+            </Box>
           </Grid>
         </Grid>
+
+        {/* Quick Alerts Widget */}
+        {alertsCount > 0 && (
+          <Paper
+            sx={{
+              p: { xs: 2, sm: 3 },
+              borderRadius: "20px",
+              mb: { xs: 3, md: 4 },
+              border: "2px solid #f57c00",
+              boxShadow: '0 4px 12px rgba(245, 124, 0, 0.15)',
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2, flexWrap: "wrap", gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <NotificationsActiveIcon sx={{ color: "#f57c00", fontSize: 28 }} />
+                <Typography variant="h6" sx={{ color: "#f57c00", fontWeight: 600 }}>
+                  Active Alerts ({alertsCount})
+                </Typography>
+              </Box>
+              <Button
+                variant="outlined"
+                size="small"
+                href="/alerts"
+                sx={{
+                  borderRadius: "10px",
+                  borderColor: "#f57c00",
+                  color: "#f57c00",
+                  "&:hover": {
+                    borderColor: "#e65100",
+                    bgcolor: "rgba(245, 124, 0, 0.04)"
+                  }
+                }}
+              >
+                View All Alerts
+              </Button>
+            </Box>
+
+            <Grid container spacing={2}>
+              {alerts.slice(0, 3).map((alert) => (
+                <Grid item xs={12} sm={6} md={4} key={alert.id}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "12px",
+                      bgcolor: alert.level === "Critical"
+                        ? "rgba(211, 47, 47, 0.08)"
+                        : alert.level === "Low"
+                          ? "rgba(245, 124, 0, 0.08)"
+                          : "rgba(2, 136, 209, 0.08)",
+                      border: `1px solid ${alert.level === "Critical"
+                          ? "#d32f2f"
+                          : alert.level === "Low"
+                            ? "#f57c00"
+                            : "#0288d1"
+                        }`,
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}>
+                      {alert.level === "Critical" ? (
+                        <ErrorIcon sx={{ color: "#d32f2f", fontSize: 20 }} />
+                      ) : alert.level === "Low" ? (
+                        <WarningIcon sx={{ color: "#f57c00", fontSize: 20 }} />
+                      ) : (
+                        <TrendingUpIcon sx={{ color: "#0288d1", fontSize: 20 }} />
+                      )}
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                          {alert.productName}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {alert.productSku}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1.5 }}>
+                      <Box>
+                        <Typography variant="caption" color="textSecondary" display="block">
+                          Stock Level
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {alert.totalStock} / {alert.reorderPoint}
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={`${alert.percentOfReorder}%`}
+                        size="small"
+                        sx={{
+                          bgcolor: alert.level === "Critical" ? "#d32f2f" : alert.level === "Low" ? "#f57c00" : "#0288d1",
+                          color: "white",
+                          fontWeight: 600
+                        }}
+                      />
+                    </Box>
+
+                    {alert.level !== "Overstocked" && (
+                      <Box sx={{ mt: 1, pt: 1, borderTop: "1px solid rgba(0,0,0,0.1)" }}>
+                        <Typography variant="caption" color="textSecondary">
+                          Recommended Order: <strong>{alert.recommendedOrderQuantity} units</strong>
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+        )}
 
         {/* Charts Section */}
         <Grid
@@ -344,27 +473,41 @@ export default function Home({ products, warehouses, stock, error }: HomeProps) 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
   try {
     const { loadData, PRODUCTS_FILE, WAREHOUSES_FILE, STOCK_FILE } = await import('@/lib/dataUtils');
+    const path = await import('path');
+
+    const ALERTS_FILE = path.default.join(process.cwd(), "data", "alerts.json");
 
     // Load data from the server
     const products = loadData(PRODUCTS_FILE);
     const warehouses = loadData(WAREHOUSES_FILE);
     const stock = loadData(STOCK_FILE);
 
+    // Load alerts and filter for open ones only
+    let alerts = [];
+    try {
+      alerts = loadData(ALERTS_FILE).filter((a: AlertType) => a.status === "Open");
+    } catch (e) {
+      console.log("No alerts file found, initializing empty alerts");
+      alerts = [];
+    }
+
     return {
       props: {
         products,
         warehouses,
         stock,
+        alerts,
       },
     };
   } catch (error) {
     console.error("Error loading dashboard data on server:", error);
-    
+
     return {
       props: {
         products: [],
         warehouses: [],
         stock: [],
+        alerts: [],
         error: "Failed to load dashboard data. Please try again later.",
       },
     };
