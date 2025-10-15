@@ -290,7 +290,7 @@ export default function Alerts() {
                                     <option value="Acknowledged">Acknowledged</option>
                                     <option value="Resolved">Resolved</option>
                                 </select>
-                                <label className="form-label">Filter by Status</label>
+                                <label className="form-label" style={{borderRadius: "7px"}}>Filter by Status</label>
                             </div>
                         </Grid>
 
@@ -307,7 +307,7 @@ export default function Alerts() {
                                     <option value="Low">Low</option>
                                     <option value="Overstocked">Overstocked</option>
                                 </select>
-                                <label className="form-label">Filter by Level</label>
+                                <label className="form-label" style={{borderRadius: "7px"}}>Filter by Level</label>
                             </div>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6}>

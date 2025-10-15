@@ -60,6 +60,7 @@
 
 .form-select option {
   font-size: 10px;
+  border-radius: 12px;
 }
 
 @media (min-width: 768px) {

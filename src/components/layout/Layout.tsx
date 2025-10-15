@@ -16,6 +16,10 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import IconButton from "@mui/material/IconButton";
+import { useThemeMode } from "@/contexts/ThemeContext";
 
 interface MenuItem {
   label: string;
@@ -29,7 +33,7 @@ const menuItems: MenuItem[] = [
   { label: "Warehouses", href: "/warehouses", icon: WarehouseIcon },
   { label: "Transfers", href: "/transfers", icon: SyncAltIcon },
   { label: "Stock Levels", href: "/stock", icon: BarChartIcon },
-  { label: "Alerts", href: "/alerts", icon: BarChartIcon },
+  { label: "Alerts", href: "/alerts", icon: BarChartIcon }, // 👈 Desktop only
 ];
 
 const GREEN_MAIN = "#2e7d32";
@@ -40,16 +44,22 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
-  // Ensure the activePath correctly identifies the current page, 
+  const { isDark, toggleTheme } = useThemeMode();
+
+  // Determine active path
   const activePath =
-    menuItems.find((item) => router.pathname.startsWith(item.href) && item.href !== '/')?.href ||
-    (router.pathname === '/' ? '/' : "");
+    menuItems.find(
+      (item) => router.pathname.startsWith(item.href) && item.href !== "/"
+    )?.href || (router.pathname === "/" ? "/" : "");
 
   return (
     <>
+      {/* Top App Bar */}
       <AppBar position="static" sx={{ bgcolor: GREEN_MAIN }}>
-        <Toolbar>
+        <Toolbar sx={{ position: "relative" }}>
           <InventoryIcon sx={{ mr: { xs: 1, sm: 2 } }} />
+
+          {/* Brand Name */}
           <Typography
             variant="h6"
             component="div"
@@ -70,9 +80,15 @@ export default function Layout({ children }: LayoutProps) {
                 component={Link}
                 href={item.href}
                 sx={{
-                  fontWeight: router.pathname.startsWith(item.href) && item.href !== '/' ? 700 : 400,
+                  fontWeight:
+                    router.pathname.startsWith(item.href) &&
+                    item.href !== "/"
+                      ? 700
+                      : 400,
                   textDecoration:
-                    (router.pathname.startsWith(item.href) && item.href !== '/') || router.pathname === item.href
+                    (router.pathname.startsWith(item.href) &&
+                      item.href !== "/") ||
+                    router.pathname === item.href
                       ? "underline"
                       : "none",
                   textUnderlineOffset: "8px",
@@ -80,11 +96,15 @@ export default function Layout({ children }: LayoutProps) {
                   borderRadius: "10px",
                   "&:hover": {
                     textDecoration:
-                      (router.pathname.startsWith(item.href) && item.href !== '/') || router.pathname === item.href
+                      (router.pathname.startsWith(item.href) &&
+                        item.href !== "/") ||
+                      router.pathname === item.href
                         ? "underline"
                         : "none",
                     backgroundColor:
-                      (router.pathname.startsWith(item.href) && item.href !== '/') || router.pathname === item.href
+                      (router.pathname.startsWith(item.href) &&
+                        item.href !== "/") ||
+                      router.pathname === item.href
                         ? "transparent"
                         : "rgba(255, 255, 255, 0.06)",
                   },
@@ -95,8 +115,22 @@ export default function Layout({ children }: LayoutProps) {
             ))}
           </Box>
 
-          {/* Mobile Spacer */}
+          {/* Spacer for Mobile */}
           <Box sx={{ display: { xs: "block", md: "none" }, width: "48px" }} />
+
+          {/* Theme Toggle Button */}
+          <IconButton
+            onClick={toggleTheme}
+            sx={{
+              color: "white",
+              transition: "transform 0.3s",
+              "&:hover": { transform: "rotate(180deg)" },
+              position: { xs: "absolute", md: "static" },
+              right: { xs: 8, md: "auto" },
+            }}
+          >
+            {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
         </Toolbar>
       </AppBar>
 
@@ -110,7 +144,7 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </Box>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation (Mobile Only, Alerts Hidden) */}
       <Box
         sx={{
           display: { xs: "block", md: "none" },
@@ -135,36 +169,40 @@ export default function Layout({ children }: LayoutProps) {
             justifyContent: "space-between",
           }}
         >
-          {menuItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = (item.href === '/' && router.pathname === '/') || (item.href !== '/' && router.pathname.startsWith(item.href));
-            return (
-              <BottomNavigationAction
-                key={item.href}
-                label={item.label}
-                value={item.href}
-                icon={
-                  <IconComponent
-                    sx={{
-                      color: isActive ? GREEN_MAIN : "text.secondary",
-                      fontSize: "1.3rem",
-                    }}
-                  />
-                }
-                sx={{
-                  color: isActive ? GREEN_MAIN : "text.secondary",
-                  minWidth: "auto",
-                  "& .MuiBottomNavigationAction-label": {
-                    marginTop: "2px",
-                    fontSize: { xs: "0.6rem", sm: "0.8rem" },
-                  },
-                  "& .MuiBottomNavigationAction-label.Mui-selected": {
-                    color: GREEN_MAIN,
-                  },
-                }}
-              />
-            );
-          })}
+          {menuItems
+            .filter((item) => item.label !== "Alerts") // 👈 Hide Alerts on mobile
+            .map((item) => {
+              const IconComponent = item.icon;
+              const isActive =
+                (item.href === "/" && router.pathname === "/") ||
+                (item.href !== "/" && router.pathname.startsWith(item.href));
+              return (
+                <BottomNavigationAction
+                  key={item.href}
+                  label={item.label}
+                  value={item.href}
+                  icon={
+                    <IconComponent
+                      sx={{
+                        color: isActive ? GREEN_MAIN : "text.secondary",
+                        fontSize: "1.3rem",
+                      }}
+                    />
+                  }
+                  sx={{
+                    color: isActive ? GREEN_MAIN : "text.secondary",
+                    minWidth: "auto",
+                    "& .MuiBottomNavigationAction-label": {
+                      marginTop: "2px",
+                      fontSize: { xs: "0.5rem", sm: "0.8rem" },
+                    },
+                    "& .MuiBottomNavigationAction-label.Mui-selected": {
+                      color: GREEN_MAIN,
+                    },
+                  }}
+                />
+              );
+            })}
         </BottomNavigation>
       </Box>
     </>

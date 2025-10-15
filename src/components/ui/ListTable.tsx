@@ -12,7 +12,7 @@ import {
   SxProps,
   Theme,
 } from "@mui/material";
-import React from "react"; 
+import React from "react";
 
 interface DataTableColumn<T> {
   id: keyof T | 'actions';
@@ -22,7 +22,7 @@ interface DataTableColumn<T> {
   render: (row: T) => React.ReactNode;
 }
 
-interface ListTableProps<T extends { id: string | number }> { 
+interface ListTableProps<T extends { id: string | number }> {
   data: T[];
   columns: DataTableColumn<T>[];
   loading: boolean;
@@ -39,7 +39,8 @@ export default function ListTable<T extends { id: string | number }>({
 }: ListTableProps<T>) {
   const theme = useTheme();
 
-  const GREEN_MAIN = theme.palette.success.main; 
+  // FIX: Use the primary color from the theme, which is theme-aware
+  const PRIMARY_MAIN = theme.palette.primary.main;
 
   // Define responsive font size using breakpoints
   const responsiveFontSize = {
@@ -59,7 +60,11 @@ export default function ListTable<T extends { id: string | number }>({
   };
 
   const innerTableWrapperStyles: SxProps<Theme> = {
-    boxShadow: `inset -8px 0 8px -10px ${theme.palette.grey[300]}`,
+    // Make the shadow theme-aware, using a darker grey in light mode, and transparent in dark mode
+    boxShadow: 
+      theme.palette.mode === 'light' 
+        ? `inset -8px 0 8px -10px ${theme.palette.grey[300]}` 
+        : `none`,
     overflowX: "auto",
   };
 
@@ -86,12 +91,12 @@ export default function ListTable<T extends { id: string | number }>({
     <Box
       sx={{
         ...sx,
-        // Custom Scrollbar 
+        // Custom Scrollbar - Use the theme-aware primary color
         '&::-webkit-scrollbar': {
           width: '7px',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: GREEN_MAIN,
+          backgroundColor: PRIMARY_MAIN,
           borderRadius: '10px',
         },
       }}
@@ -104,6 +109,8 @@ export default function ListTable<T extends { id: string | number }>({
             height: '7px',
           },
           '&::-webkit-scrollbar-thumb': {
+            // Inherit the color from the parent Box
+            backgroundColor: PRIMARY_MAIN, 
             borderRadius: '10px',
           },
           '&::-webkit-scrollbar-corner': {
@@ -121,7 +128,9 @@ export default function ListTable<T extends { id: string | number }>({
                     style={{ minWidth: column.minWidth || 0 }}
                     sx={{
                       fontWeight: 700,
-                      backgroundColor: theme.palette.grey[50],
+                      // FIX: Use theme.palette.background.paper which changes 
+                      // between light (white) and dark (dark brown)
+                      backgroundColor: theme.palette.background.paper, 
                       color: theme.palette.text.primary,
                       fontSize: responsiveFontSize,
                     }}
