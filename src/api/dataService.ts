@@ -139,6 +139,134 @@ export async function deleteStockItem(id: string | number): Promise<void> {
   }
 }
 
+// Define interfaces for creation/update payloads (if not already in inventory.ts)
+interface ProductPayload {
+  sku: string;
+  name: string;
+  category: string;
+  unitCost: number;
+  reorderPoint: number;
+}
+interface WarehousePayload {
+  name: string;
+  location: string;
+  code: string;
+}
+
+// Creates a new product record.
+export async function createProduct(payload: ProductPayload): Promise<void> {
+  const response = await fetch("/api/products", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Unknown error" }));
+    throw new Error(error.message || "Product creation failed.");
+  }
+}
+
+// Updates an existing product record.
+export async function updateProduct(
+  id: string | number,
+  payload: ProductPayload
+): Promise<void> {
+  const response = await fetch(`/api/products/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Unknown error" }));
+    throw new Error(error.message || "Product update failed.");
+  }
+}
+
+// Creates a new warehouse record.
+export async function createWarehouse(
+  payload: WarehousePayload
+): Promise<void> {
+  const response = await fetch("/api/warehouses", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Unknown error" }));
+    throw new Error(error.message || "Warehouse creation failed.");
+  }
+}
+
+// Updates an existing warehouse record.
+export async function updateWarehouse(
+  id: string | number,
+  payload: WarehousePayload
+): Promise<void> {
+  const response = await fetch(`/api/warehouses/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Unknown error" }));
+    throw new Error(error.message || "Warehouse update failed.");
+  }
+}
+
+// Fetches a single product item.
+export async function fetchProductItem(id: string | number): Promise<Product> {
+  const response = await fetch(`/api/products/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch product item.");
+  return response.json();
+}
+
+// Fetches a single warehouse item.
+export async function fetchWarehouseItem(
+  id: string | number
+): Promise<Warehouse> {
+  const response = await fetch(`/api/warehouses/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch warehouse item.");
+  return response.json();
+}
+
+// Fetches a single stock item.
+export async function fetchStockItem(id: string | number) {
+  const response = await fetch(`/api/stock/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch stock item.");
+  return response.json();
+}
+
+// Updates an existing stock record.
+export async function updateStockItem(
+  id: string | number,
+  payload: StockPayload
+): Promise<void> {
+  const response = await fetch(`/api/stock/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Unknown error" }));
+    throw new Error(error.message || "Stock update failed.");
+  }
+}
+
 // Creates a new transfer record.
 export async function createTransfer(payload: TransferPayload): Promise<void> {
   const response = await fetch("/api/transfers/create", {

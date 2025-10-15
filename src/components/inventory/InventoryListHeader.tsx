@@ -15,6 +15,8 @@ export default function InventoryListHeader({
   actionHref,
   CustomLinkComponent,
 }: InventoryListHeaderProps) {
+  const shortText = "Add";
+
   return (
     <Box
       sx={{
@@ -30,6 +32,10 @@ export default function InventoryListHeader({
         variant="h5"
         component="h2"
         sx={{
+          fontSize: {
+            xs: '1.2rem',
+            md: '2.125rem'
+          },
           fontWeight: 600,
           color: '#2e7d32',
         }}
@@ -47,9 +53,21 @@ export default function InventoryListHeader({
           borderRadius: '10px',
           minWidth: { xs: 'auto', sm: 150 },
           padding: { xs: '8px 12px', sm: '8px 16px' },
+          whiteSpace: 'nowrap',
         }}
       >
-        {actionButtonText}
+        <Typography
+          component="span"
+          sx={{ display: { xs: 'none', md: 'inline' } }}
+        >
+          {actionButtonText}
+        </Typography>
+        <Typography
+          component="span"
+          sx={{ display: { xs: 'inline', md: 'none' } }}
+        >
+          {shortText}
+        </Typography>
       </Button>
     </Box>
   );

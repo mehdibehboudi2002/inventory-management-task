@@ -16,7 +16,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (req.method === "GET") {
-    res.status(200).json(products);
+    const sortedProducts = products.sort((a, b) => b.id - a.id);
+    res.status(200).json(sortedProducts);
   } else if (req.method === "POST") {
     // Type the new product object from the request body
     const newProduct: Omit<Product, "id"> = req.body;

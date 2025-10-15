@@ -20,7 +20,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (req.method === "GET") {
-    res.status(200).json(stock);
+    const sortedStock = stock.sort((a, b) => b.id - a.id);
+    res.status(200).json(sortedStock);
   } else if (req.method === "POST") {
     // Type the new stock object from the request body
     const newStock: Omit<StockWithId, "id"> = req.body;

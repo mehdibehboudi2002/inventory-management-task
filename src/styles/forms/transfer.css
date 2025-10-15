@@ -58,6 +58,16 @@
   color: #2e7d32;
 }
 
+.form-select option {
+  font-size: 10px;
+}
+
+@media (min-width: 768px) {
+  .form-select option {
+    font-size: 14px;
+  }
+}
+
 .form-select {
   cursor: pointer;
   appearance: none;
@@ -83,8 +93,8 @@
   color: rgba(0, 0, 0, 0.87);
   transition: all 0.2s ease-in-out;
   box-sizing: border-box;
-  min-height: 55px;   
-  height: 55px;  
+  min-height: 55px;
+  height: 55px;
 }
 
 .form-textarea:hover {

@@ -15,7 +15,7 @@ export interface Warehouse {
 }
 
 export interface Stock {
-  productId: number; 
+  id: number;
   warehouseId: number; 
   quantity: number;
   lastUpdated: string; 
