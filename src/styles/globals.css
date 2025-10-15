@@ -20,11 +20,11 @@ a {
   text-decoration: none;
 }
 
+/* Scroll lock */
 .modal-scroll-lock {
   position: fixed;
   width: 100%;
   overflow-y: scroll;
-  /* Hide scrollbar but keep the space */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */
 }

@@ -92,7 +92,6 @@ export default function Stock() {
       setStock(stock.filter((item) => String(item.id) !== selectedStockId));
       
       handleClose();
-      console.log(`Stock record ${selectedStockId} deleted successfully.`);
 
     } catch (error) {
       console.error("Error deleting stock:", error);

@@ -70,7 +70,6 @@ export default function Products() {
       );
       
       handleClose();
-      console.log(`Product ${selectedProductId} deleted successfully.`);
 
     } catch (error) {
       console.error("Error deleting product:", error);

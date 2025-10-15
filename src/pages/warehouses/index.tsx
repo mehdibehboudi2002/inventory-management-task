@@ -72,7 +72,6 @@ export default function Warehouses() {
       );
       
       handleClose();
-      console.log(`Warehouse ${selectedWarehouseId} deleted successfully.`);
 
     } catch (error) {
       console.error("Error deleting warehouse:", error);

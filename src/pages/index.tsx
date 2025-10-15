@@ -487,7 +487,6 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
     try {
       alerts = loadData(ALERTS_FILE).filter((a: AlertType) => a.status === "Open");
     } catch (e) {
-      console.log("No alerts file found, initializing empty alerts");
       alerts = [];
     }
 
