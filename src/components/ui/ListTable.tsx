@@ -12,8 +12,8 @@ import {
   SxProps,
   Theme,
 } from "@mui/material";
+import React from "react"; 
 
-// Re-using the types definition for DataTableColumn
 interface DataTableColumn<T> {
   id: keyof T | 'actions';
   label: string;
@@ -22,7 +22,7 @@ interface DataTableColumn<T> {
   render: (row: T) => React.ReactNode;
 }
 
-interface ListTableProps<T extends { id: string }> {
+interface ListTableProps<T extends { id: string | number }> { 
   data: T[];
   columns: DataTableColumn<T>[];
   loading: boolean;
@@ -30,11 +30,7 @@ interface ListTableProps<T extends { id: string }> {
   sx?: SxProps<Theme>;
 }
 
-/**
- * A generic, responsive table component designed for displaying list data.
- * @template T - The type of data object being displayed (must have an 'id').
- */
-export default function ListTable<T extends { id: string }>({
+export default function ListTable<T extends { id: string | number }>({
   data,
   columns,
   loading,
@@ -43,22 +39,30 @@ export default function ListTable<T extends { id: string }>({
 }: ListTableProps<T>) {
   const theme = useTheme();
 
+  const GREEN_MAIN = theme.palette.success.main; 
+
   // Define responsive font size using breakpoints
   const responsiveFontSize = {
-    xs: theme.typography.pxToRem(9.5), 
-    sm: theme.typography.pxToRem(10.5), 
-    md: theme.typography.pxToRem(12), 
+    xs: theme.typography.pxToRem(9.5),
+    sm: theme.typography.pxToRem(10.5),
+    md: theme.typography.pxToRem(12),
     lg: theme.typography.pxToRem(14),
   };
-  
+
   const responsiveTableStyle = {
     // Allows columns to size based on content
-    tableLayout: 'auto', 
+    tableLayout: 'auto',
     // Forces text to stay on one line
     'th, td': {
-        whiteSpace: 'nowrap',
+      whiteSpace: 'nowrap',
     },
   };
+
+  const innerTableWrapperStyles: SxProps<Theme> = {
+    boxShadow: `inset -8px 0 8px -10px ${theme.palette.grey[300]}`,
+    overflowX: "auto",
+  };
+
 
   if (loading) {
     return (
@@ -79,52 +83,78 @@ export default function ListTable<T extends { id: string }>({
   }
 
   return (
-    <Box sx={sx}> 
-      <TableContainer>
-        <Table stickyHeader aria-label="data table" sx={responsiveTableStyle}>
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={String(column.id)}
-                  align={column.align || "left"}
-                  style={{ minWidth: column.minWidth || 0 }}
-                  sx={{
-                    fontWeight: 700,
-                    backgroundColor: theme.palette.grey[50],
-                    color: theme.palette.text.primary,
-                    fontSize: responsiveFontSize,
-                    // Cell style includes nowrap from responsiveTableStyle
-                  }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                {columns.map((column) => {
-                  return (
-                    <TableCell 
-                      key={String(column.id)} 
-                      align={column.align || "left"}
-                      sx={{ 
-                        py: { xs: 1, sm: 1.5 },
-                        fontSize: responsiveFontSize,
-                        // Cell style includes nowrap from responsiveTableStyle
-                      }} 
-                    >
-                      {column.render(row)}
-                    </TableCell>
-                  );
-                })}
+    <Box
+      sx={{
+        ...sx,
+        // Custom Scrollbar 
+        '&::-webkit-scrollbar': {
+          width: '7px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: GREEN_MAIN,
+          borderRadius: '10px',
+        },
+      }}
+    >
+
+      <Box sx={innerTableWrapperStyles}>
+
+        <TableContainer sx={{
+          '&::-webkit-scrollbar': {
+            height: '7px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            borderRadius: '10px',
+          },
+          '&::-webkit-scrollbar-corner': {
+            backgroundColor: 'transparent',
+          },
+        }}>
+          <Table stickyHeader aria-label="data table" sx={responsiveTableStyle}>
+
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={String(column.id)}
+                    align={column.align || "left"}
+                    style={{ minWidth: column.minWidth || 0 }}
+                    sx={{
+                      fontWeight: 700,
+                      backgroundColor: theme.palette.grey[50],
+                      color: theme.palette.text.primary,
+                      fontSize: responsiveFontSize,
+                    }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+
+            <TableBody>
+              {data.map((row) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                  {columns.map((column) => {
+                    return (
+                      <TableCell
+                        key={`${String(row.id)}-${String(column.id)}`}
+                        align={column.align || "left"}
+                        sx={{
+                          py: { xs: 1, sm: 1.5 },
+                          fontSize: responsiveFontSize,
+                        }}
+                      >
+                        {column.render(row)}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </Box>
   );
 }

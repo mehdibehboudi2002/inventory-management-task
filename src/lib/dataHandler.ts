@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-// Define the root directory for data files
+// Define the data files
 const dataDir = path.join(process.cwd(), "src", "data");
 
 export const PRODUCTS_FILE = "products.json";
@@ -26,7 +26,7 @@ function readFileData(fileName: string): any[] {
   }
 }
 
-// Utility function to write data to a JSON file.
+// Utility function to write data to a JSON file
 export function writeData(fileName: string, data: any[]): void {
   const filePath = path.join(dataDir, fileName);
   try {
@@ -37,11 +37,11 @@ export function writeData(fileName: string, data: any[]): void {
   }
 }
 
-// Helper to generate a new unique ID.
+// Helper to generate a new unique ID
 export function getNewId(data: { id: string | number }[]): string {
   if (data.length === 0) return "1";
 
-  // Find the highest existing ID by parsing to number
+  // Find the highest existing ID
   const maxId = data.reduce((max, item) => {
     const currentId = parseInt(String(item.id), 10);
     return currentId > max ? currentId : max;

@@ -14,47 +14,32 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Layout from "@/components/layout/Layout"; 
 import ListTable from "@/components/ui/ListTable"; 
-import { DataTableColumn } from "@/types/inventory";
+import { DataTableColumn, Warehouse } from "@/types/inventory"; 
 import InventoryListHeader from "@/components/inventory/InventoryListHeader"; 
+import { fetchWarehousesList, deleteWarehouse } from "@/api/dataService"; 
 
-// Mock implementation of Link behavior for the environment
 const CustomLink = ({ href, children, ...props }: { href: string, children: ReactNode, [key: string]: any }) => (
   <a href={href} onClick={(e) => { e.preventDefault(); window.location.href = href; }} {...props}>
     {children}
   </a>
 );
 
-// --- Define specific data type for the Warehouse entity ---
-interface Warehouse {
-  id: string; // T must extend { id: string } for ListTable
-  code: string;
-  name: string;
-  location: string;
-}
-
 export default function Warehouses() {
-  // State variables with explicit types
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWarehouses();
+    fetchData();
   }, []);
 
-  const fetchWarehouses = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      // Mock API call
-      const mockWarehouses: Warehouse[] = [
-        { id: 'w1', code: 'HDQ', name: 'Headquarters', location: '123 Main St, Anytown' },
-        { id: 'w2', code: 'WD', name: 'West Distribution', location: '456 Industrial Ave, West City' },
-        { id: 'w3', code: 'EAST', name: 'Eastern Fulfillment', location: '789 Trade Loop, East Coast' },
-      ];
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500)); 
-      setWarehouses(mockWarehouses);
+      // Use service layer function to fetch data
+      const data = await fetchWarehousesList();
+      setWarehouses(data);
     } catch (error) {
       console.error("Error fetching warehouses:", error);
       setWarehouses([]);
@@ -64,8 +49,8 @@ export default function Warehouses() {
   };
 
   // Handler functions with explicit types
-  const handleClickOpen = (id: string) => {
-    setSelectedWarehouseId(id);
+  const handleClickOpen = (id: string | number) => {
+    setSelectedWarehouseId(String(id));
     setOpen(true);
   };
 
@@ -78,12 +63,16 @@ export default function Warehouses() {
     if (!selectedWarehouseId) return;
 
     try {
-      // Mock delete logic
+      // Use service layer function to delete the record
+      await deleteWarehouse(selectedWarehouseId);
+      
+      // Remove the deleted item
       setWarehouses(
-        warehouses.filter((warehouse) => warehouse.id !== selectedWarehouseId)
+        warehouses.filter((warehouse) => String(warehouse.id) !== selectedWarehouseId)
       );
+      
       handleClose();
-      console.log(`Warehouse ${selectedWarehouseId} deleted.`);
+      console.log(`Warehouse ${selectedWarehouseId} deleted successfully.`);
 
     } catch (error) {
       console.error("Error deleting warehouse:", error);
@@ -142,7 +131,6 @@ export default function Warehouses() {
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ borderRadius: "20px" }}>
           
-          {/* NEW: Use the InventoryListHeader component */}
           <InventoryListHeader
             title="Warehouses"
             actionButtonText="Add Warehouse"
@@ -150,18 +138,16 @@ export default function Warehouses() {
             CustomLinkComponent={CustomLink}
           />
 
-          {/* ListTable no longer needs title or actionButton props */}
           <ListTable<Warehouse>
             data={warehouses}
             columns={columns}
             loading={loading}
             emptyMessage="No warehouses available. Click 'Add Warehouse' to get started."
-            // Table content needs padding/margin inside the Paper
             sx={{ p: { xs: 1, sm: 3 }, pt: 0 }} 
           />
         </Paper>
 
-        {/* Delete Confirmation Dialog (Kept local) */}
+        {/* Delete Confirmation Dialog */}
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Delete Warehouse</DialogTitle>
           <DialogContent>

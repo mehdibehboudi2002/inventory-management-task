@@ -8,7 +8,7 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
-  Paper, 
+  Paper,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -16,8 +16,8 @@ import Layout from "@/components/layout/Layout";
 import ListTable from "@/components/ui/ListTable";
 import { DataTableColumn, Product } from "@/types/inventory";
 import InventoryListHeader from "@/components/inventory/InventoryListHeader";
+import { fetchProductsList, deleteProduct } from "@/api/dataService"; 
 
-// Mock implementation of Link behavior for the environment
 const CustomLink = ({ href, children, ...props }: { href: string, children: React.ReactNode, [key: string]: any }) => (
   <a href={href} onClick={(e) => { e.preventDefault(); window.location.href = href; }} {...props}>
     {children}
@@ -31,32 +31,24 @@ export default function Products() {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProducts();
+    fetchData();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      // Mock API call
-      const mockProducts: Product[] = [
-        { id: 'p1', sku: 'SKU001', name: 'Organic Coffee Beans', category: 'Groceries', unitCost: 12.50, reorderPoint: 50 },
-        { id: 'p2', sku: 'SKU002', name: 'Stainless Steel Water Bottle', category: 'Home Goods', unitCost: 8.00, reorderPoint: 75 },
-        { id: 'p3', sku: 'SKU003', name: 'Bamboo Toothbrush Pack', category: 'Personal Care', unitCost: 4.25, reorderPoint: 100 },
-        { id: 'p4', sku: 'SKU004', name: 'Recycled Notebook', category: 'Office Supplies', unitCost: 3.50, reorderPoint: 60 },
-      ];
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500)); 
-      setProducts(mockProducts);
+      // Use the service layer function
+      const data = await fetchProductsList();
+      setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
-      setProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleClickOpen = (id: string) => {
-    setSelectedProductId(id);
+  const handleClickOpen = (id: string | number) => {
+    setSelectedProductId(String(id)); // Ensure it's a string for state
     setOpen(true);
   };
 
@@ -69,12 +61,16 @@ export default function Products() {
     if (!selectedProductId) return;
 
     try {
-      // Mock delete logic
-      setProducts(
-        products.filter((product) => product.id !== selectedProductId)
+      // Use the service layer function to delete
+      await deleteProduct(selectedProductId);
+      
+      // Update the local state to remove the deleted item 
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => String(product.id) !== selectedProductId)
       );
+      
       handleClose();
-      console.log(`Product ${selectedProductId} deleted.`);
+      console.log(`Product ${selectedProductId} deleted successfully.`);
 
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -130,7 +126,6 @@ export default function Products() {
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ borderRadius: "20px" }}>
           
-          {/* NEW: Use the InventoryListHeader component */}
           <InventoryListHeader
             title="Products"
             actionButtonText="Add Product"
@@ -138,13 +133,11 @@ export default function Products() {
             CustomLinkComponent={CustomLink}
           />
 
-          {/* ListTable no longer needs title or actionButton props */}
           <ListTable<Product>
             data={products}
             columns={columns}
             loading={loading}
             emptyMessage="No products are currently defined."
-            // Table content needs padding/margin inside the Paper
             sx={{ p: { xs: 1, sm: 3 }, pt: 0 }} 
           />
         </Paper>

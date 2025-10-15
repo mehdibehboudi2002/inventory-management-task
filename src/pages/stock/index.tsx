@@ -14,29 +14,17 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Layout from "@/components/layout/Layout"; 
 import ListTable from "@/components/ui/ListTable"; 
-import { DataTableColumn } from "@/types/inventory";
+import { DataTableColumn, StockItem, Product, Warehouse } from "@/types/inventory"; 
 import InventoryListHeader from "@/components/inventory/InventoryListHeader"; 
+import { fetchProductsList, fetchWarehousesList, fetchStockList, deleteStockItem } from "@/api/dataService";
 
-// Mock implementation of Link behavior for the environment
 const CustomLink = ({ href, children, ...props }: { href: string, children: ReactNode, [key: string]: any }) => (
   <a href={href} onClick={(e) => { e.preventDefault(); window.location.href = href; }} {...props}>
     {children}
   </a>
 );
 
-// --- Define specific data types for clarity and type safety ---
-interface Product { id: string; name: string; sku: string; }
-interface Warehouse { id: string; name: string; code: string; }
-interface StockItem { 
-    id: string; // Required for the ListTable generic constraint T extends { id: string }
-    productId: string; 
-    warehouseId: string; 
-    quantity: number; 
-}
-
-
 export default function Stock() {
-  // State variables with explicit types
   const [stock, setStock] = useState<StockItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -51,29 +39,18 @@ export default function Stock() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Mock data setup
-      const mockProducts: Product[] = [
-        { id: 'p1', sku: 'SKU001', name: 'Coffee Beans' },
-        { id: 'p2', sku: 'SKU002', name: 'Water Bottle' },
-      ];
-      const mockWarehouses: Warehouse[] = [
-        { id: 'w1', name: 'Main Hub', code: 'MH' },
-        { id: 'w2', name: 'West Dock', code: 'WD' },
-      ];
-      const mockStock: StockItem[] = [
-        { id: 's1', productId: 'p1', warehouseId: 'w1', quantity: 500 },
-        { id: 's2', productId: 'p1', warehouseId: 'w2', quantity: 150 },
-        { id: 's3', productId: 'p2', warehouseId: 'w1', quantity: 300 },
-      ];
+      // Use service layer to fetch all dependencies 
+      const [stockData, productsData, warehousesData] = await Promise.all([
+        fetchStockList(),
+        fetchProductsList(),
+        fetchWarehousesList(),
+      ]);
 
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500)); 
-
-      setStock(mockStock);
-      setProducts(mockProducts);
-      setWarehouses(mockWarehouses);
+      setStock(stockData);
+      setProducts(productsData);
+      setWarehouses(warehousesData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching inventory data for Stock page:", error);
       setStock([]);
       setProducts([]);
       setWarehouses([]);
@@ -82,21 +59,20 @@ export default function Stock() {
     }
   };
 
-  // Helper function with explicit string argument and return types
-  const getProductName = (productId: string): string => {
-    const product = products.find((p) => p.id === productId);
+  // Helper functions with explicit string argument and return types
+  const getProductName = (productId: string | number): string => {
+    const product = products.find((p) => String(p.id) === String(productId));
     return product ? `${product.name} (${product.sku})` : "Unknown Product";
   };
 
-  // Helper function with explicit string argument and return types
-  const getWarehouseName = (warehouseId: string): string => {
-    const warehouse = warehouses.find((w) => w.id === warehouseId);
+  const getWarehouseName = (warehouseId: string | number): string => {
+    const warehouse = warehouses.find((w) => String(w.id) === String(warehouseId));
     return warehouse ? `${warehouse.name} (${warehouse.code})` : "Unknown Warehouse";
   };
 
   // Handler functions with explicit types
-  const handleClickOpen = (id: string) => {
-    setSelectedStockId(id);
+  const handleClickOpen = (id: string | number) => {
+    setSelectedStockId(String(id));
     setOpen(true);
   };
 
@@ -109,17 +85,21 @@ export default function Stock() {
     if (!selectedStockId) return;
 
     try {
-      // Mock delete logic
-      setStock(stock.filter((item) => item.id !== selectedStockId));
+      // Use service layer function to delete the stock item
+      await deleteStockItem(selectedStockId);
+      
+      // Remove the deleted item from the list
+      setStock(stock.filter((item) => String(item.id) !== selectedStockId));
+      
       handleClose();
-      console.log(`Stock record ${selectedStockId} deleted.`);
+      console.log(`Stock record ${selectedStockId} deleted successfully.`);
 
     } catch (error) {
       console.error("Error deleting stock:", error);
     }
   };
 
-  // Define the columns for the ListTable (The core declarative definition)
+  // Define the columns for the ListTable 
   const columns: DataTableColumn<StockItem>[] = [
     { 
       id: "productId", 
@@ -137,7 +117,6 @@ export default function Stock() {
       id: "quantity",
       label: "Quantity",
       align: "right",
-      // Safely access quantity and format it
       render: (row) => row.quantity?.toLocaleString() ?? 'N/A',
     },
     {
@@ -172,7 +151,6 @@ export default function Stock() {
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ borderRadius: "20px" }}>
           
-          {/* NEW: Use the InventoryListHeader component */}
           <InventoryListHeader
             title="Stock Levels"
             actionButtonText="Add Stock Record"
@@ -180,18 +158,16 @@ export default function Stock() {
             CustomLinkComponent={CustomLink}
           />
 
-          {/* ListTable no longer needs title or actionButton props */}
-          <ListTable<StockItem> // Explicitly set the generic type for safety
+          <ListTable<StockItem> 
             data={stock}
             columns={columns}
             loading={loading}
             emptyMessage="No stock records available. Add a new stock record to get started."
-            // Table content needs padding/margin inside the Paper
             sx={{ p: { xs: 1, sm: 3 }, pt: 0 }} 
           />
         </Paper>
         
-        {/* Delete Confirmation Dialog (kept local as it handles local state logic) */}
+        {/* Delete Confirmation Dialog */}
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Delete Stock Record</DialogTitle>
           <DialogContent>

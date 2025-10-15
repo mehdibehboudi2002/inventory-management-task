@@ -9,14 +9,12 @@ export default function DashboardStatCard({
   return (
     <Card
       sx={{
-        // Apply the dynamic gradient background
         background: backgroundGradient,
         color: "white",
         height: "100%",
         borderRadius: "20px",
         display: 'flex',
         alignItems: 'center',
-        // Subtle elevation for modern look
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         transition: 'transform 0.3s, box-shadow 0.3s',
         '&:hover': {
@@ -26,14 +24,13 @@ export default function DashboardStatCard({
       }}
     >
       <CardContent sx={{ p: { xs: 2, sm: 3 }, width: '100%' }}>
-        
-        {/* Icon Container: Ensures the icon styles are applied correctly */}
+
+        {/* Icon Container */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          {/* We assume the icon passed in will have responsive styles defined on it */}
           {icon}
         </Box>
-        
-        {/* Value: Large and bold */}
+
+        {/* Value*/}
         <Typography
           variant="h3"
           sx={{
@@ -45,8 +42,8 @@ export default function DashboardStatCard({
         >
           {value}
         </Typography>
-        
-        {/* Title/Label: Smaller text for description */}
+
+        {/* Title/Label */}
         <Typography
           variant="body2"
           sx={{

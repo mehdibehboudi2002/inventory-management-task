@@ -16,7 +16,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(400).json({ message: 'Invalid Stock ID' });
     }
 
-    const filePath = path.join(process.cwd(), 'data', 'stock.json');
+    const filePath = path.join(process.cwd(), "src", "data", 'stock.json');
     
     const jsonData = fs.readFileSync(filePath);
     let stock: StockWithId[] = [];
@@ -28,7 +28,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(500).json({ message: 'Error loading stock data' });
     }
 
-    // --- GET (Read single stock item) ---
+    // GET 
     if (req.method === 'GET') {
         const stockItem = stock.find((s) => s.id === stockId);
         if (stockItem) {
@@ -37,7 +37,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             res.status(404).json({ message: 'Stock item not found' });
         }
     
-    // --- PUT (Update stock item) ---
+    // PUT 
     } else if (req.method === 'PUT') {
         const index = stock.findIndex((s) => s.id === stockId);
         if (index !== -1) {
@@ -56,7 +56,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             res.status(404).json({ message: 'Stock item not found' });
         }
 
-    // --- DELETE (Remove stock item) ---
+    // DELETE
     } else if (req.method === 'DELETE') {
         const index = stock.findIndex((s) => s.id === stockId);
         if (index !== -1) {

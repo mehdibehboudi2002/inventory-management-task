@@ -21,17 +21,17 @@ export default function InventoryListHeader({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        p: 3, // Padding inside the header, assumes parent is a Paper/Card
+        p: 3,
         borderBottom: "1px solid #eee",
-        mb: 2, // Margin below the header to separate from the table
+        mb: 2,
       }}
     >
-      <Typography 
-        variant="h5" 
+      <Typography
+        variant="h5"
         component="h2"
         sx={{
           fontWeight: 600,
-          color: '#2e7d32', // Use the theme color for consistency
+          color: '#2e7d32',
         }}
       >
         {title}
@@ -44,9 +44,9 @@ export default function InventoryListHeader({
         component={CustomLinkComponent}
         href={actionHref}
         sx={{
-            borderRadius: '10px',
-            minWidth: { xs: 'auto', sm: 150 },
-            padding: { xs: '8px 12px', sm: '8px 16px' },
+          borderRadius: '10px',
+          minWidth: { xs: 'auto', sm: 150 },
+          padding: { xs: '8px 12px', sm: '8px 16px' },
         }}
       >
         {actionButtonText}

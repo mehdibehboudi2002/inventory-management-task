@@ -12,7 +12,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(400).json({ message: 'Invalid Warehouse ID' });
     }
 
-    const filePath = path.join(process.cwd(), 'data', 'warehouses.json');
+    const filePath = path.join(process.cwd(), "src", "data", 'warehouses.json');
     
     const jsonData = fs.readFileSync(filePath);
     let warehouses: Warehouse[] = [];
@@ -23,7 +23,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(500).json({ message: 'Error loading data' });
     }
 
-    // --- GET (Read single warehouse) ---
+    // GET 
     if (req.method === 'GET') {
         const warehouse = warehouses.find((w) => w.id === warehouseId);
         if (warehouse) {
@@ -32,7 +32,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             res.status(404).json({ message: 'Warehouse not found' });
         }
     
-    // --- PUT (Update warehouse) ---
+    // PUT 
     } else if (req.method === 'PUT') {
         const index = warehouses.findIndex((w) => w.id === warehouseId);
         if (index !== -1) {
@@ -50,7 +50,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             res.status(404).json({ message: 'Warehouse not found' });
         }
 
-    // --- DELETE (Remove warehouse) ---
+    // DELETE 
     } else if (req.method === 'DELETE') {
         const index = warehouses.findIndex((w) => w.id === warehouseId);
         if (index !== -1) {

@@ -1,12 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from "next";
 import {
   loadData,
   writeData,
   getNewId,
   STOCK_FILE,
   TRANSFERS_FILE,
-} from '@/lib/data-handler';
-import { StockItem, Transfer } from '@/types/inventory';
+} from "@/lib/dataHandler";
+import { StockItem, Transfer } from "@/types/inventory";
 
 // Define the expected request body type
 interface NewTransferPayload {
@@ -21,8 +21,8 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Transfer | { message: string }>
 ) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
@@ -31,25 +31,36 @@ export default function handler(
 
   // Comprehensive Input Validation
   if (!productId || !fromWarehouseId || !toWarehouseId || !reason) {
-    return res.status(400).json({ message: 'Product, warehouse IDs, and transfer reason are required.' });
+    return res
+      .status(400)
+      .json({
+        message: "Product, warehouse IDs, and transfer reason are required.",
+      });
   }
-  if (typeof quantity !== 'number' || quantity <= 0) {
-    return res.status(400).json({ message: 'Quantity must be a positive number.' });
+  if (typeof quantity !== "number" || quantity <= 0) {
+    return res
+      .status(400)
+      .json({ message: "Quantity must be a positive number." });
   }
   if (fromWarehouseId === toWarehouseId) {
-    return res.status(400).json({ message: 'Source and destination warehouses must be different for a transfer.' });
+    return res
+      .status(400)
+      .json({
+        message:
+          "Source and destination warehouses must be different for a transfer.",
+      });
   }
 
   try {
-    // Read current state of both files 
+    // Read current state of both files
     const allStock = loadData(STOCK_FILE) as StockItem[];
     const allTransfers = loadData(TRANSFERS_FILE) as Transfer[];
 
-    // 2. Find Source Stock and Check Availability
     const sourceStockIndex = allStock.findIndex(
       (s) => s.productId === productId && s.warehouseId === fromWarehouseId
     );
-    const sourceStock = sourceStockIndex !== -1 ? allStock[sourceStockIndex] : null;
+    const sourceStock =
+      sourceStockIndex !== -1 ? allStock[sourceStockIndex] : null;
 
     const currentStock = sourceStock?.quantity ?? 0;
     if (currentStock < quantity) {
@@ -59,16 +70,16 @@ export default function handler(
     }
 
     // Update Stock Levels
-    
+
     // Subtract from source (guaranteed to exist based on validation above)
     if (sourceStock) {
       const remaining = currentStock - quantity;
-      
+
       if (remaining > 0) {
         // Update the quantity at the existing index
         allStock[sourceStockIndex].quantity = remaining;
       } else {
-        // Remove the stock item entirely if the quantity drops to zero 
+        // Remove the stock item entirely if the quantity drops to zero
         allStock.splice(sourceStockIndex, 1);
       }
     }
@@ -91,7 +102,7 @@ export default function handler(
       };
       allStock.push(newStock);
     }
-    
+
     // Create New Transfer Record
     const newTransfer: Transfer = {
       id: getNewId(allTransfers),
@@ -99,7 +110,7 @@ export default function handler(
       fromWarehouseId,
       toWarehouseId,
       quantity,
-      status: 'Complete', 
+      status: "Complete",
       timestamp: new Date().toISOString(),
       reason,
     };
@@ -107,11 +118,15 @@ export default function handler(
 
     // Write to both files
     writeData(STOCK_FILE, allStock);
-    writeData(TRANSFERS_FILE, allTransfers); 
+    writeData(TRANSFERS_FILE, allTransfers);
     res.status(201).json(newTransfer);
-
   } catch (error) {
-    console.error('Stock transfer failed unexpectedly:', error);
-    res.status(500).json({ message: 'Internal Server Error: Failed to process transfer or update data files.' });
+    console.error("Stock transfer failed unexpectedly:", error);
+    res
+      .status(500)
+      .json({
+        message:
+          "Internal Server Error: Failed to process transfer or update data files.",
+      });
   }
 }

@@ -13,6 +13,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CategoryIcon from "@mui/icons-material/Category";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import SyncAltIcon from "@mui/icons-material/SyncAlt"; 
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
 
@@ -26,6 +27,7 @@ const menuItems: MenuItem[] = [
   { label: "Dashboard", href: "/", icon: DashboardIcon },
   { label: "Products", href: "/products", icon: CategoryIcon },
   { label: "Warehouses", href: "/warehouses", icon: WarehouseIcon },
+  { label: "Transfers", href: "/transfers", icon: SyncAltIcon }, 
   { label: "Stock Levels", href: "/stock", icon: BarChartIcon },
 ];
 
@@ -37,9 +39,11 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
+  // Ensure the activePath correctly identifies the current page, 
   const activePath =
-    menuItems.find((item) => router.pathname === item.href)?.href || "/";
-
+    menuItems.find((item) => router.pathname.startsWith(item.href) && item.href !== '/')?.href || 
+    (router.pathname === '/' ? '/' : ""); 
+    
   return (
     <>
       <AppBar position="static" sx={{ bgcolor: GREEN_MAIN }}>
@@ -56,7 +60,7 @@ export default function Layout({ children }: LayoutProps) {
             <Link href={"/"}>GreenSupply Co</Link>
           </Typography>
 
-          {/* Desktop Navigation: 992px+ */}
+          {/* Desktop Navigation */}
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {menuItems.map((item) => (
               <Button
@@ -65,17 +69,21 @@ export default function Layout({ children }: LayoutProps) {
                 component={Link}
                 href={item.href}
                 sx={{
-                  fontWeight: router.pathname === item.href ? 700 : 400,
+                  fontWeight: router.pathname.startsWith(item.href) && item.href !== '/' ? 700 : 400,
                   textDecoration:
-                    router.pathname === item.href ? "underline" : "none",
+                    (router.pathname.startsWith(item.href) && item.href !== '/') || router.pathname === item.href
+                      ? "underline"
+                      : "none",
                   textUnderlineOffset: "8px",
                   fontSize: "0.9rem",
                   borderRadius: "10px",
                   "&:hover": {
                     textDecoration:
-                      router.pathname === item.href ? "underline" : "none",
+                      (router.pathname.startsWith(item.href) && item.href !== '/') || router.pathname === item.href
+                        ? "underline"
+                        : "none",
                     backgroundColor:
-                      router.pathname === item.href
+                      (router.pathname.startsWith(item.href) && item.href !== '/') || router.pathname === item.href
                         ? "transparent"
                         : "rgba(255, 255, 255, 0.06)",
                   },
@@ -94,7 +102,7 @@ export default function Layout({ children }: LayoutProps) {
       {/* Main Content */}
       <Box
         sx={{
-          minHeight: "100vh",
+          minHeight: "fit-content",
           pb: { xs: "70px", lg: 4 },
         }}
       >
@@ -128,7 +136,7 @@ export default function Layout({ children }: LayoutProps) {
         >
           {menuItems.map((item) => {
             const IconComponent = item.icon;
-            const isActive = item.href === activePath;
+            const isActive = (item.href === '/' && router.pathname === '/') || (item.href !== '/' && router.pathname.startsWith(item.href));
             return (
               <BottomNavigationAction
                 key={item.href}

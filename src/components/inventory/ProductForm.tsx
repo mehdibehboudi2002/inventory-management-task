@@ -31,21 +31,21 @@ export default function ProductForm({
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 }, borderRadius: "20px" }}>
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-          <Button 
-            onClick={onGoBack} 
-            startIcon={<ArrowBackIcon />} 
-            color="secondary" 
+          <Button
+            onClick={onGoBack}
+            startIcon={<ArrowBackIcon />}
+            color="secondary"
             sx={{ mr: 2 }}
           >
             Back
           </Button>
-          <Typography 
-            variant="h4" 
-            component="h1" 
-            sx={{ 
-                flexGrow: 1, 
-                fontWeight: 600, 
-                color: '#2e7d32' 
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              flexGrow: 1,
+              fontWeight: 600,
+              color: '#2e7d32'
             }}
           >
             {title}
@@ -53,7 +53,6 @@ export default function ProductForm({
         </Box>
 
         <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 2 }}>
-          {/* Form Fields will be passed as children */}
           {children}
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
