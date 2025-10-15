@@ -19,3 +19,18 @@ export function loadData(filePath: string): any[] {
         throw new Error(`Failed to load dashboard data required for SSR from ${path.basename(filePath)}.`);
     }
 }
+
+export function saveData(filePath: string, data: any): void {
+    try {
+        // Ensure directory exists
+        const dir = path.dirname(filePath);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        
+        // Write data to file with proper formatting
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        throw new Error(`Failed to save data to ${path.basename(filePath)}: ${error}`);
+    }
+}

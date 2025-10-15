@@ -66,11 +66,21 @@ export interface Transfer {
 export interface Alert {
     id: string;
     productId: string;
-    warehouseId?: string;
-    status: "Critical" | "Low" | "Overstocked";
-    currentStock: number;
+    productName: string;
+    productSku: string;
+    totalStock: number;
     reorderPoint: number;
-    acknowledged: boolean;
-    timestamp: string;
-    resolutionNotes?: string;
+    level: "Critical" | "Low" | "Adequate" | "Overstocked";
+    status: "Open" | "Acknowledged" | "Resolved";
+    percentOfReorder: number;
+    recommendedOrderQuantity: number;
+    warehouses: {
+        id: string;
+        name: string;
+        stock: number;
+    }[];
+    createdAt: string;
+    acknowledgedAt?: string;
+    resolvedAt?: string;
+    notes?: string;
 }
