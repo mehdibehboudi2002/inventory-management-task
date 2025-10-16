@@ -3,7 +3,9 @@ import { loadData, saveData, PRODUCTS_FILE, STOCK_FILE } from "@/lib/dataUtils";
 import { Product, StockItem, Alert } from "@/types/inventory";
 import path from "path";
 
-const ALERTS_FILE = path.join(process.cwd(), "data", "alerts.json");
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const DATA_DIR = IS_PRODUCTION ? '/tmp/data' : path.join(process.cwd(), 'src', 'data');
+const ALERTS_FILE = path.join(DATA_DIR, "alerts.json");
 
 function calculateAlerts(products: Product[], stock: StockItem[]): Alert[] {
   const alerts: Alert[] = [];

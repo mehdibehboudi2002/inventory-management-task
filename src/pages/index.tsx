@@ -275,10 +275,10 @@ export default function Home({ products, warehouses, stock, alerts, error }: Hom
                           ? "rgba(245, 124, 0, 0.08)"
                           : "rgba(2, 136, 209, 0.08)",
                       border: `1px solid ${alert.level === "Critical"
-                          ? "#d32f2f"
-                          : alert.level === "Low"
-                            ? "#f57c00"
-                            : "#0288d1"
+                        ? "#d32f2f"
+                        : alert.level === "Low"
+                          ? "#f57c00"
+                          : "#0288d1"
                         }`,
                     }}
                   >
@@ -475,7 +475,9 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
     const { loadData, PRODUCTS_FILE, WAREHOUSES_FILE, STOCK_FILE } = await import('@/lib/dataUtils');
     const path = await import('path');
 
-    const ALERTS_FILE = path.default.join(process.cwd(), "data", "alerts.json");
+    const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+    const DATA_DIR = IS_PRODUCTION ? '/tmp/data' : path.default.join(process.cwd(), 'src', 'data');
+    const ALERTS_FILE = path.default.join(DATA_DIR, "alerts.json");
 
     // Load data from the server
     const products = loadData(PRODUCTS_FILE);

@@ -1,1 +1,132 @@
-[]
+[
+  {
+    "id": "alert-1-1760556234900",
+    "productId": "1",
+    "productName": "Bamboo Spork Set",
+    "productSku": "ECO-UTN-001",
+    "totalStock": 400,
+    "reorderPoint": 100,
+    "level": "Overstocked",
+    "status": "Open",
+    "percentOfReorder": 400,
+    "recommendedOrderQuantity": 0,
+    "warehouses": [
+      {
+        "id": "2",
+        "name": "Warehouse 2",
+        "stock": 267
+      },
+      {
+        "id": "3",
+        "name": "Warehouse 3",
+        "stock": 132
+      },
+      {
+        "id": "1",
+        "name": "Warehouse 1",
+        "stock": 1
+      }
+    ],
+    "createdAt": "2025-10-15T19:23:54.900Z"
+  },
+  {
+    "id": "alert-2-1760556234901",
+    "productId": "2",
+    "productName": "Compostable Food Container 32oz",
+    "productSku": "ECO-PKG-002",
+    "totalStock": 2000,
+    "reorderPoint": 500,
+    "level": "Overstocked",
+    "status": "Open",
+    "percentOfReorder": 400,
+    "recommendedOrderQuantity": 0,
+    "warehouses": [
+      {
+        "id": "1",
+        "name": "Warehouse 1",
+        "stock": 995
+      },
+      {
+        "id": "3",
+        "name": "Warehouse 3",
+        "stock": 1005
+      }
+    ],
+    "createdAt": "2025-10-15T19:23:54.901Z"
+  },
+  {
+    "id": "alert-3-1760556234901",
+    "productId": "3",
+    "productName": "Wooden Chopsticks",
+    "productSku": "ECO-UTN-003",
+    "totalStock": 4300,
+    "reorderPoint": 1000,
+    "level": "Overstocked",
+    "status": "Open",
+    "percentOfReorder": 430,
+    "recommendedOrderQuantity": 0,
+    "warehouses": [
+      {
+        "id": "1",
+        "name": "Warehouse 1",
+        "stock": 2000
+      },
+      {
+        "id": "2",
+        "name": "Warehouse 2",
+        "stock": 2300
+      }
+    ],
+    "createdAt": "2025-10-15T19:23:54.901Z"
+  },
+  {
+    "id": "alert-4-1760556234901",
+    "productId": "4",
+    "productName": "Recyclable Paper Bowl",
+    "productSku": "ECO-PKG-004",
+    "totalStock": 1550,
+    "reorderPoint": 750,
+    "level": "Overstocked",
+    "status": "Open",
+    "percentOfReorder": 207,
+    "recommendedOrderQuantity": 0,
+    "warehouses": [
+      {
+        "id": "1",
+        "name": "Warehouse 1",
+        "stock": 950
+      },
+      {
+        "id": "2",
+        "name": "Warehouse 2",
+        "stock": 600
+      }
+    ],
+    "createdAt": "2025-10-15T19:23:54.901Z"
+  },
+  {
+    "id": "alert-5-1760556234901",
+    "productId": "5",
+    "productName": "Biodegradable Coffee Cup 12oz",
+    "productSku": "ECO-CUP-005",
+    "totalStock": 1150,
+    "reorderPoint": 600,
+    "level": "Overstocked",
+    "status": "Open",
+    "percentOfReorder": 192,
+    "recommendedOrderQuantity": 0,
+    "warehouses": [
+      {
+        "id": "2",
+        "name": "Warehouse 2",
+        "stock": 455
+      },
+      {
+        "id": "3",
+        "name": "Warehouse 3",
+        "stock": 695
+      }
+    ],
+    "createdAt": "2025-10-15T19:23:54.901Z"
+  }
+]

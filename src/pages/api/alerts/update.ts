@@ -3,7 +3,9 @@ import { loadData, saveData } from "@/lib/dataUtils";
 import { Alert } from "@/types/inventory";
 import path from "path";
 
-const ALERTS_FILE = path.join(process.cwd(), "data", "alerts.json");
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const DATA_DIR = IS_PRODUCTION ? '/tmp/data' : path.join(process.cwd(), 'src', 'data');
+const ALERTS_FILE = path.join(DATA_DIR, "alerts.json");
 
 export default async function handler(
   req: NextApiRequest,
