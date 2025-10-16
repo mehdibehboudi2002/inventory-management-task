@@ -267,7 +267,7 @@ Good luck! 💪
 **Name:** Mehdi Behboudi
 **Completion Time:** ~18 hours
 **Live Application:** https://inventoryapplication.vercel.app
-**Video Walkthrough:** [**INSERT YOUTUBE/LOOM LINK HERE AFTER RECORDING**]
+**Video Walkthrough:** https://youtu.be/FGtBP_dH5Qc (a little longer than excpected because of the said reasons in the video)
 
 ### Features Completed
 

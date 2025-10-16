@@ -119,12 +119,12 @@
       {
         "id": "2",
         "name": "Warehouse 2",
-        "stock": 455
+        "stock": 456
       },
       {
         "id": "3",
         "name": "Warehouse 3",
-        "stock": 695
+        "stock": 694
       }
     ],
     "createdAt": "2025-10-15T19:23:54.901Z"
